@@ -1,10 +1,9 @@
-
 import socket
 
 
 HOST_ADRESS = "10.134.53.56"
 PORT = 9999
-#création du serveur, il ne fait qu'accepter les connections
+
 
 
 class Connexion:
