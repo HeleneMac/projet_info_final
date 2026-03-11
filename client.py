@@ -16,4 +16,3 @@ class Ecouter:
 if __name__ == "__main__":
     ecoute = Ecouter(HOST_ADRESS,PORT)
     ecoute.envoyer("salut du client")
-    client.close()
