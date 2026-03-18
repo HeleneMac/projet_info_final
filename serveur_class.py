@@ -26,4 +26,3 @@ if __name__ == "__main__":
     client = connect.ecoute()
     connect.envoyer(client,"salut de l'host")
     client.close()
-
