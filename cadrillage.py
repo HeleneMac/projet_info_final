@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
-print("hello")
+
 TAILLE_CASE = 40
 NB_LIGNES = 11
 NB_COLONNES = 11
@@ -56,6 +56,7 @@ class Controleur:
                 messagebox.showinfo("Erreur","Case déjà occupée")
                 return
 
+        # Définition orientation
         if len(self.bateau_en_cours) == 1:
 
             l0,c0 = self.bateau_en_cours[0]
@@ -70,6 +71,7 @@ class Controleur:
                 messagebox.showinfo("Erreur","Le bateau doit être horizontal ou vertical")
                 return
 
+        # Vérification orientation
         if len(self.bateau_en_cours) >= 1:
 
             l0,c0 = self.bateau_en_cours[0]
@@ -82,7 +84,23 @@ class Controleur:
                 messagebox.showinfo("Erreur","Le bateau doit rester vertical")
                 return
 
+        # ✅ NOUVEAU : vérifier que la case est adjacente
+        if len(self.bateau_en_cours) >= 1:
 
+            adjacent = False
+
+            for (l, c) in self.bateau_en_cours:
+
+                if (ligne == l and abs(colonne - c) == 1) or \
+                   (colonne == c and abs(ligne - l) == 1):
+
+                    adjacent = True
+
+            if not adjacent:
+                messagebox.showinfo("Erreur", "Les cases doivent être collées")
+                return
+
+        # Ajout de la case
         self.bateau_en_cours.append((ligne,colonne))
         self.vue.marquer_case_joueur(ligne,colonne,"gray")
 
