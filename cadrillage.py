@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 import random
-
+print("hello")
 TAILLE_CASE = 40
 NB_LIGNES = 11
 NB_COLONNES = 11
