@@ -35,7 +35,7 @@ class Controleur:
 
     def lier_vue(self, vue):
         self.vue = vue
-        self.generer_bateaux_adversaire()
+        #self.generer_bateaux_adversaire()
 
 
 # ------------------------
