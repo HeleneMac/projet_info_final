@@ -1,4 +1,5 @@
 import socket
+import cadrillage as cd
 
 HOST_ADRESS = "10.134.54.108"
 PORT = 9999
@@ -16,3 +17,7 @@ class Ecouter:
 if __name__ == "__main__":
     ecoute = Ecouter(HOST_ADRESS,PORT)
     ecoute.envoyer("salut du client")
+    controleur = cd.Controleur()
+    vue = cd.Vue(controleur)
+    controleur.lier_vue(vue)
+    vue.lancer()

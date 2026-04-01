@@ -1,4 +1,5 @@
 import socket
+import cadrillage as cd
 
 
 #HOST_ADRESS = "10.134.54.108"
@@ -25,4 +26,9 @@ if __name__ == "__main__":
     connect = Connexion(PORT)
     client = connect.ecoute()
     connect.envoyer(client,"salut de l'host")
+    connecteur = cd.Connecteur()
+    vue = cd.Vue(controleur)
+    controleur.lier_vue(vue)
+    vue.lancer()
     client.close()
+    
