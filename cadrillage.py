@@ -311,7 +311,7 @@ class Vue:
                         self.boutons_joueur[(ligne,colonne)] = bouton
 
                     else:
-
+                        
                         bouton.config(
                             command=lambda l=ligne,c=colonne:
                             self.controleur.tirer(l,c)
@@ -333,9 +333,9 @@ class Vue:
 
 
 # ========= MAIN ==========
-controleur = Controleur()
-vue = Vue(controleur)
 
-controleur.lier_vue(vue)
-
-vue.lancer()
+if __name__ == "__main__":
+    controleur = Controleur()
+    vue = Vue(controleur)
+    controleur.lier_vue(vue)
+    vue.lancer()
