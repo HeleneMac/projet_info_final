@@ -41,6 +41,7 @@ class Controleur:
 # ------------------------
 # Placement bateaux joueur
 # ------------------------
+        
 
     def placer_bateau(self, ligne, colonne):
 
@@ -84,7 +85,7 @@ class Controleur:
                 messagebox.showinfo("Erreur","Le bateau doit rester vertical")
                 return
 
-        # ✅ NOUVEAU : vérifier que la case est adjacente
+        # vérifier que la case est adjacente
         if len(self.bateau_en_cours) >= 1:
 
             adjacent = False

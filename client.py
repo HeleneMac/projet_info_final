@@ -9,14 +9,15 @@ class Ecouter:
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client.connect((host,port))
         
-    def envoyer(self,texte):
+    def envoyer(self,bateaux):
         self.client.send(texte.encode())
         print(self.client.recv(1024).decode())
+        self.client.send(bateaux)
         
     
 if __name__ == "__main__":
     ecoute = Ecouter(HOST_ADRESS,PORT)
-    ecoute.envoyer("salut du client")
+    ecoute.envoyer(vue.self.joueur_bateaux)
     controleur = cd.Controleur()
     vue = cd.Vue(controleur)
     controleur.lier_vue(vue)

@@ -17,18 +17,21 @@ class Connexion:
             (client,adresse) = self.server.accept()
             return client
         
-    def envoyer(self,client,text):
-        client.send(text.encode())
+    def envoyer(self,client,bateaux):
+        client.send("salut".encode())
         print(client.recv(1024).decode())
+        client.send(bateaux)
+        
+        
         
         
 if __name__ == "__main__":
-    connect = Connexion(PORT)
-    client = connect.ecoute()
-    connect.envoyer(client,"salut de l'host")
-    connecteur = cd.Connecteur()
+    controleur = cd.Controleur()
     vue = cd.Vue(controleur)
     controleur.lier_vue(vue)
     vue.lancer()
+    connect = Connexion(PORT)
+    client = connect.ecoute()
+    connect.envoyer(client,vue.self.joueur_bateaux)
     client.close()
     
