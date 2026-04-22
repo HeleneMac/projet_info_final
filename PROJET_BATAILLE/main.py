@@ -106,22 +106,29 @@ class Controle:
         
         elif data.startswith("TIR:"):
             ligne, colonne = map(int, data.split(":")[1].split(","))
-            res = self.engine.verifier_tir(ligne, colonne)
-            self.ui.colorier("moi", ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
-            self.net.envoyer(f"RES:{ligne},{colonne},{res}")
+            resultat = self.engine.verifier_tir(ligne, colonne)
+            self.ui.colorier("moi", ligne, colonne, "red"
+            if resultat in ["TOUCHÉ", "COULÉ"]:
+                self.ui.colorier("moi", ligne, colonne, "red")
+            else:
+                self.ui.colorier("moi", ligne, colonne, "black"))
+            
+            self.net.envoyer(f"RES:{ligne},{colonne},{resultat}")
             self.mon_tour = True
             self.ui.set_titre("À VOUS DE JOUER !")
-            messagebox.showinfo("Alerte", f"L'adversaire a tiré en {ligne},{colonne} : {res} !")
+            messagebox.showinfo("Alerte", f"L'adversaire a tiré en {ligne},{colonne} : {resultat} !")
         elif data.startswith("RES:"):
             ligne, colonne, resultat = data.split(":")[1].split(",")
             self.traiter_resultat_tir("adv", int(ligne), int(colonne), resultat)
 
     def traiter_resultat_tir(self, grille, ligne, colonne, resultat):
         if resultat == "DÉJÀ TIRÉ":
-            messagebox.showinfo("Info", "Déjà tiré ici !"); self.mon_tour = True; return
-        self.ui.colorier(grille, ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
+            messagebox.showinfo("Info", "Déjà tiré ici !")
+            self.mon_tour = True
+            return self.ui.colorier(grille, ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
         messagebox.showinfo("Résultat", f"Tir en {ligne},{colonne} : {resultat}")
-        if self.mode == "MULTI" and not self.mon_tour: self.ui.set_titre("TOUR ADVERSAIRE")
+        if self.mode == "MULTI" and not self.mon_tour:
+            self.ui.set_titre("TOUR ADVERSAIRE")
 
     def faire_jouer_ia(self):
         ligne, colonne = random.randint(1, 10), random.randint(1, 10)
