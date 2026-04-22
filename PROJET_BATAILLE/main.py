@@ -124,7 +124,7 @@ class Controle:
         if self.mode == "MULTI" and not self.mon_tour: self.ui.set_titre("TOUR ADVERSAIRE")
 
     def faire_jouer_ia(self):
-        ligne, clonne = random.randint(1, 10), random.randint(1, 10)
+        ligne, colonne = random.randint(1, 10), random.randint(1, 10)
         while (ligne, colonne) in self.tirs_ia:
             ligne, colonne = random.randint(1, 10), random.randint(1, 10)
         self.tirs_ia.add((ligne, colonne))
