@@ -6,27 +6,33 @@ import tkinter as tk
 from tkinter import messagebox
 import random
 from engine import BatailleEngine
-from network import NetworkManager
+from network import Connexion
 from ui import BatailleUI
+PORT = 9999
 
-class GameController:
+class Controle:
     def __init__(self):
-        self.root = tk.Tk()
+        self.racine = tk.Tk()
         self.engine = BatailleEngine()
-        self.net = NetworkManager()
+        self.net = Connexion()
         self.ui = BatailleUI(self.root, self.on_tir, self.on_place)
         self.pret_moi, self.pret_adv, self.mon_tour = False, False, False
         self.mode = None
         self.tirs_ia = set()
         self.config_initiale()
+        self.texte = tk.Label(self.racine, text="Adresse de l'hôte:",font= 30)
+        self.host_adresse = tk.Entry(self.racine)
+        self.bouton_connexion = tk.Button(self.racine,text="Connexion",command=self.net.client(self.host_adresse,PORT))
 
     def config_initiale(self):
         print("\n" + "="*40)
         print(" BIENVENUE DANS LA BATAILLE NAVALE")
         print("="*40)
         choix = input("1: Solo vs Ordinateur | 2: Multi-joueurs : ")
+        choix = messagebox.askyesno ( "Seul/Multijoueur","Jouez vous seul?")#retourne true/false
         
-        if choix == '1':
+        
+        if choix == True:
             self.mode = "SOLO"; self.pret_adv = True
             self.engine_ia = BatailleEngine()
             self.engine_ia.placer_bateaux_aleatoire()
@@ -34,24 +40,22 @@ class GameController:
             messagebox.showinfo("Placer bateaux", "Mode Solo : Placez vos bateaux !")
         else:
             self.mode = "MULTI"
-            role = input("Êtes-vous Serveur (s) ou Client (c) ? : ").lower()
-            if role == 's':
-                print("\n--- INSTRUCTIONS POUR TROUVER VOTRE IP ---")
-                print("1. Appuyez sur les touches [Windows] + [R]")
-                print("2. Tapez 'cmd' et appuyez sur Entrée")
-                print("3. Dans la fenêtre noire, tapez 'ipconfig'")
-                print("4. Cherchez la ligne 'Adresse IPv4' (ex: 192.168.X.X)")
-                print("------------------------------------------")
-                print("En attente de votre partenaire...")
-                self.net.start_as_server()
+            role= messagebox.askyesno ( "Client/Serveur","Etes vous l'hôte?")
+            if role == True:
+                self.net.serveur()
                 self.mon_tour = True
             else:
-                print("\n--- INSTRUCTIONS CONNEXION ---")
-                print("Demandez l'adresse IPv4 à votre partenaire.")
-                print("Elle doit ressembler à ceci : 000.000.000.000")
-                ip = input("Entrez l'adresse IP du serveur : ")
-                self.net.start_as_client(ip)
             self.net.ecouter(self.handle_data)
+            self.texte.place(x= 5, y= 5)
+            self.host_adresse.place(x=135, y = 5)
+            self.bouton_connexion.place(x=260, y=3)
+    
+        
+        
+
+
+    
+    
             messagebox.showinfo("Placer bateaux", "Connecté ! Placez vos bateaux !")
 
     def on_place(self, l, c):
@@ -95,39 +99,46 @@ class GameController:
             self.mon_tour = False
             self.ui.set_titre("ATTENTE ADVERSAIRE...")
 
-    def handle_data(self, data):
+    def handle_data(self, data):#ici il agit comme un automate fini je crois
         if data == "READY":
             self.pret_adv = True
-            self.root.after(0, self.verifier_demarrage)
+            self.racine.after(0, self.verifier_demarrage)
+        
         elif data.startswith("TIR:"):
-            l, c = map(int, data.split(":")[1].split(","))
-            res = self.engine.verifier_tir(l, c)
-            self.ui.colorier("moi", l, c, "red" if res in ["TOUCHÉ", "COULÉ"] else "black")
-            self.net.envoyer(f"RES:{l},{c},{res}")
+            ligne, colonne = map(int, data.split(":")[1].split(","))
+            res = self.engine.verifier_tir(ligne, colonne)
+            self.ui.colorier("moi", ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
+            self.net.envoyer(f"RES:{ligne},{colonne},{res}")
             self.mon_tour = True
             self.ui.set_titre("À VOUS DE JOUER !")
-            messagebox.showinfo("Alerte", f"L'adversaire a tiré en {l},{c} : {res} !")
+            messagebox.showinfo("Alerte", f"L'adversaire a tiré en {ligne},{colonne} : {res} !")
         elif data.startswith("RES:"):
-            l, c, res = data.split(":")[1].split(",")
-            self.traiter_resultat_tir("adv", int(l), int(c), res)
+            ligne, colonne, resultat = data.split(":")[1].split(",")
+            self.traiter_resultat_tir("adv", int(ligne), int(colonne), resultat)
 
-    def traiter_resultat_tir(self, grille, l, c, res):
-        if res == "DÉJÀ TIRÉ":
+    def traiter_resultat_tir(self, grille, ligne, colonne, resultat):
+        if resultat == "DÉJÀ TIRÉ":
             messagebox.showinfo("Info", "Déjà tiré ici !"); self.mon_tour = True; return
-        self.ui.colorier(grille, l, c, "red" if res in ["TOUCHÉ", "COULÉ"] else "black")
-        messagebox.showinfo("Résultat", f"Tir en {l},{c} : {res}")
+        self.ui.colorier(grille, ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
+        messagebox.showinfo("Résultat", f"Tir en {ligne},{colonne} : {resultat}")
         if self.mode == "MULTI" and not self.mon_tour: self.ui.set_titre("TOUR ADVERSAIRE")
 
     def faire_jouer_ia(self):
-        l, c = random.randint(1, 10), random.randint(1, 10)
-        while (l, c) in self.tirs_ia: l, c = random.randint(1, 10), random.randint(1, 10)
-        self.tirs_ia.add((l, c))
-        res = self.engine.verifier_tir(l, c)
-        self.ui.colorier("moi", l, c, "red" if res in ["TOUCHÉ", "COULÉ"] else "black")
+        ligne, clonne = random.randint(1, 10), random.randint(1, 10)
+        while (ligne, colonne) in self.tirs_ia:
+            ligne, colonne = random.randint(1, 10), random.randint(1, 10)
+        self.tirs_ia.add((ligne, colonne))
+        resultat = self.engine.verifier_tir(ligne, colonne)
+        if resultat in ["TOUCHÉ", "COULÉ"]:
+             self.ui.colorier("moi", ligne, colonne, "red")
+        else:
+             self.ui.colorier("moi",ligne,colonne,"black")
+
         self.mon_tour = True
         self.ui.set_titre("À VOUS DE JOUER !")
 
-    def run(self): self.root.mainloop()
+    def run(self):
+        self.racine.mainloop()
 
 if __name__ == "__main__":
-    GameController().run()
+    Controle().run()

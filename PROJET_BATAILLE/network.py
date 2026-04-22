@@ -1,28 +1,37 @@
 import socket
 import threading
 
-class NetworkManager:
+class Connexion:
     def __init__(self):
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.conn = None
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.connexion = None
+        self.host = None
 
-    def start_as_server(self):
-        self.sock.bind(('0.0.0.0', 5555))
-        self.sock.listen(1)
-        self.conn, _ = self.sock.accept()
+    def serveur(self,port):
+        self.host = socket.gethostbyname(socket.gethostname())
+        self.server.bind((self.host,port))
+        self.server.listen(1)
+        messagebox.showinfo("Conexion","En attente de connexion...")
+        (self.connexion, adresse) = self.server.accept()
+        messagebox.showinfo("Connexion","Connexion réussie")
 
-    def start_as_client(self, ip):
-        self.sock.connect((ip, 5555))
-        self.conn = self.sock
+    def client(self, host_adress,port):
+        self.server.connect((host_adresse,port))
+        self.connexion = self.server
+        messagebox.showinfo("Connexion","Connexion réussie")
 
     def envoyer(self, msg):
-        if self.conn: self.conn.send(msg.encode())
+        self.connexion.send(msg.encode())
 
     def ecouter(self, callback):
-        def loop():
+        def boucle_ecoute():
             while True:
                 try:
-                    data = self.conn.recv(1024).decode()
-                    if data: callback(data)
-                except: break
-        threading.Thread(target=loop, daemon=True).start()
+                    message = self.connexion.recv(1024).decode()
+                    if message:
+                        callback(message)
+                except:
+                    break
+
+        thread = threading.Thread(target=boucle_ecoute, daemon=True)
+        thread.start()
