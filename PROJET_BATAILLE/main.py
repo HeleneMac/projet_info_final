@@ -58,14 +58,14 @@ class Controle:
     
             messagebox.showinfo("Placer bateaux", "Connecté ! Placez vos bateaux !")
 
-    def on_place(self, l, c):
+    def on_place(self, ligne, colonne):
         if self.pret_moi: return
-        valide, msg = self.engine.valider_clic(l, c)
+        valide, msg = self.engine.valider_clic(ligne, colonne)
         if not valide:
             messagebox.showwarning("Attention", msg); return
 
-        fini = self.engine.ajouter_point(l, c)
-        self.ui.colorier("moi", l, c, "blue")
+        fini = self.engine.ajouter_point(ligne, colonne)
+        self.ui.colorier("moi", ligne, colonne, "blue")
 
         if fini:
             if self.engine.index_taille < len(self.engine.tailles_a_placer):
@@ -84,18 +84,18 @@ class Controle:
             self.ui.set_titre("ATTENTE ADVERSAIRE")
             messagebox.showinfo("Attente", "Vous avez fini ! On attend l'adversaire.")
 
-    def on_tir(self, l, c):
+    def on_tir(self, ligne, colonne):
         if not self.pret_moi or not self.pret_adv:
             messagebox.showwarning("Attente", "Le placement n'est pas fini !"); return
         if not self.mon_tour:
             messagebox.showinfo("Tour", "C'est le tour de l'adversaire !"); return
 
         if self.mode == "SOLO":
-            res = self.engine_ia.verifier_tir(l, c)
-            self.traiter_resultat_tir("adv", l, c, res)
+            res = self.engine_ia.verifier_tir(ligne, colonne)
+            self.traiter_resultat_tir("adv", ligne, colonne, resultat)
             self.mon_tour = False; self.root.after(800, self.faire_jouer_ia)
         else:
-            self.net.envoyer(f"TIR:{l},{c}")
+            self.net.envoyer(f"TIR:{ligne},{colonne}")
             self.mon_tour = False
             self.ui.set_titre("ATTENTE ADVERSAIRE...")
 
