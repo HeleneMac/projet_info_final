@@ -1,23 +1,81 @@
 import tkinter as tk
 
 class BatailleUI:
-    def __init__(self, root, cb_tir, cb_place):
-        self.root = root
-        self.bt_moi, self.bt_adv = {}, {}
-        f1 = tk.Frame(root); f1.pack(side=tk.LEFT, padx=20, pady=20)
-        f2 = tk.Frame(root); f2.pack(side=tk.RIGHT, padx=20, pady=20)
-        tk.Label(f1, text="MA FLOTTE", font=('Arial', 10, 'bold')).grid(row=0, column=1, columnspan=10)
-        tk.Label(f2, text="ATTAQUE", font=('Arial', 10, 'bold')).grid(row=0, column=1, columnspan=10)
-        for l in range(1, 11):
-            for c in range(1, 11):
-                b_m = tk.Button(f1, width=3, bg="#E1F5FE", command=lambda l=l,c=c: cb_place(l,c))
-                b_m.grid(row=l, column=c); self.bt_moi[(l,c)] = b_m
-                b_a = tk.Button(f2, width=3, bg="#ECEFF1", command=lambda l=l,c=c: cb_tir(l,c))
-                b_a.grid(row=l, column=c); self.bt_adv[(l,c)] = b_a
+    """Interface graphique du jeu Bataille Navale.
+    Affiche les grilles du joueur et de l'adversaire."""
+      
+    def __init__(self, root, callback_tir, callback_placement):
+        """
+            Initialise la fenêtre du jeu et crée les grilles.
 
-    def colorier(self, grille, l, c, couleur):
-        target = self.bt_moi if grille == "moi" else self.bt_adv
-        if (l,c) in target: target[(l,c)].config(bg=couleur)
+            Args:
+                root (tk.Tk): fenêtre principale
+                callback_tir (function): fonction appelée lors d'un tir
+                callback_placement (function): fonction appelée lors du placement des bateaux
+        """
+    
+        self.root = root
+        self.boutons_ma_flotte[(ligne, colonne)] = bouton_flotte
+        self.bateau_adversaire = {}
+        
+        frame_flotte = tk.Frame(root)
+        frame_flotte.pack(side=tk.LEFT, padx=20, pady=20)
+        
+        frame_adversaire = tk.Frame(root)
+        frame_adversaire.pack(side=tk.RIGHT, padx=20, pady=20)
+        
+        tk.Label(frame_flotte, text="MA FLOTTE", font=('Arial', 10, 'bold')).grid(row=0, column=1, columnspan=10)
+        tk.Label(frame_adversaire, text="ATTAQUE", font=('Arial', 10, 'bold')).grid(row=0, column=1, columnspan=10)
+        
+        for ligne in range(1, 11):
+            for colonne in range(1, 11):
+                
+                bouton_flotte = tk.Button(
+                    frame_flotte,
+                    width=3,
+                    bg="#E1F5FE",
+                    command=lambda ligne=ligne,colonne=colonne: callback_placement(ligne,colonne)
+                )
+                
+                bouton_flotte.grid(row=ligne, column=colonne)
+                self.bateau_moi[(ligne,colonne)] = bouton_flotte
+                
+                
+                bouton_adversaire = tk.Button(
+                    frame_adversaire,
+                    width=3,
+                    bg="#ECEFF1",
+                    command=lambda ligne=ligne,colonne=colonne: callback_tir(ligne,colonne)
+                )
+                
+                bouton_adversaire.grid(row=ligne, column=colonne)
+                self.bateau_adversaire[(ligne,colonne)] = bouton_adversaire
+
+    def colorier(self, grille, ligne, colonne, couleur):
+        """
+        Change la couleur d'une case sur une grille.
+
+        Args:
+            grille (str): "moi" ou "adversaire"
+            ligne (int): ligne de la case
+            colonne (int): colonne de la case
+            couleur (str): couleur Tkinter (ex: "red", "blue")
+        """
+        
+        if grille == "moi":
+            target = self.boutons_ma_flotte
+        else:
+            target = self.bateau_adversaire
+            
+        if (ligne,colonne) in target:
+            target[(ligne,colonne)].config(bg=couleur)
     
     def set_titre(self, texte):
+        """
+        Modifie le titre de la fenêtre.
+
+        Args:
+            texte (str): texte à afficher dans le titre
+        """
+            
         self.root.title(f"Bataille Navale - {texte}")
