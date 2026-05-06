@@ -33,5 +33,5 @@ class Connexion:
                 except:
                     break
 
-        thread = threading.Thread(target=boucle_ecoute, daemon=True)
+        thread = threading.Thread(target=boucle_ecoute, daemon=True)#permet de faire fonctionner le programme en parrallèle
         thread.start()
