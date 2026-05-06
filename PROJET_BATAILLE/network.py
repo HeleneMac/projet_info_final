@@ -16,6 +16,7 @@ class Connexion:
         messagebox.showinfo("Connexion", f"En attente de connexion...\nAdresse hôte : {self.host}")
         self.connexion, adresse = self.server.accept()
         messagebox.showinfo("Connexion", f"Connexion réussie avec {adresse[0]}")
+        messagebox.showinfo("Début","Commencez à placer vos bateaux")
 
     def client(self, host_adresse, port):
         self.server.connect((host_adresse, port))
