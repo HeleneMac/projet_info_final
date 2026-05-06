@@ -59,7 +59,7 @@ class Controle:
                 self.texte.place(x=5, y=5)
                 self.host_adresse.place(x=135, y=5)
                 self.bouton_connexion.place(x=260, y=3)
-            messagebox.showinfo("Placer bateaux", "Connecté ! Placez vos bateaux !")
+            messagebox.showinfo("Connexion","Entrez l'adresse de l'hôte en haut à gauche")
 
     def connecter_client(self):
         """Connecte le client puis démarre l'écoute réseau."""
