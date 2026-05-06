@@ -60,7 +60,7 @@ class Controle:
                 self.texte.place(x=5, y=5)
                 self.host_adresse.place(x=135, y=5)
                 self.bouton_connexion.place(x=260, y=3)
-            messagebox.showinfo("Début","Vous pouvez commencer à placer vos bateaux")
+            #messagebox.showinfo("Début","Vous pouvez commencer à placer vos bateaux")
                 
         
 
