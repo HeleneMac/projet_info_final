@@ -111,11 +111,11 @@ class Controle:
     def on_tir(self, ligne, colonne):
         """Gère un tir du joueur."""
         if not self.pret_moi or not self.pret_adv:
-            messagebox.showwarning("Attente", "Le placement n'est pas fini !")
+            self.afficher_notification("Attente", "Le placement n'est pas fini !")
             return
 
         if not self.mon_tour:
-            messagebox.showinfo("Tour", "C'est le tour de l'adversaire !")
+            self.afficher_notification("Tour", "C'est le tour de l'adversaire !")
             return
 
         if self.mode == "SOLO":
@@ -142,18 +142,18 @@ class Controle:
             self.net.envoyer(f"RES:{ligne},{colonne},{resultat}")
             self.mon_tour = True
             self.ui.set_titre("À VOUS DE JOUER !")
-            messagebox.showinfo("Alerte", f"L'adversaire a tiré en {ligne},{colonne} : {resultat} !")
+            self.afficher_notification("Alerte", f"L'adversaire a tiré en {ligne},{colonne} : {resultat} !")
         elif data.startswith("RES:"):
             ligne, colonne, resultat = data.split(":")[1].split(",")
             self.traiter_resultat_tir("adversaire", int(ligne), int(colonne), resultat)
 
     def traiter_resultat_tir(self, grille, ligne, colonne, resultat):
         if resultat == "DÉJÀ TIRÉ":
-            messagebox.showinfo("Info", "Déjà tiré ici !")
+            self.afficher_notification("Info", "Déjà tiré sur cette case, choisissez une autre case.")
             self.mon_tour = True
             return
         self.ui.colorier(grille, ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
-        messagebox.showinfo("Résultat", f"Tir en {ligne},{colonne} : {resultat}")
+        self.afficher_notification("Résultat", f"Tir en {ligne},{colonne} : {resultat}")
         if self.mode == "MULTI" and not self.mon_tour:
             self.ui.set_titre("TOUR ADVERSAIRE")
 
@@ -167,12 +167,36 @@ class Controle:
             self.ui.colorier("moi", ligne, colonne, "red")
         else:
             self.ui.colorier("moi", ligne, colonne, "black")
-        messagebox.showinfo("Tour ordinateur", f"L'ordinateur a tiré en {ligne},{colonne} : {resultat}")
+        self.afficher_notification("Tour ordinateur", f"L'ordinateur a tiré en {ligne},{colonne} : {resultat}")
         self.mon_tour = True
         self.ui.set_titre("À VOUS DE JOUER !")
+
+
+    def afficher_notification(self, titre, texte, duree=1800):
+        """Affiche une petite fenêtre comme un messagebox, mais sans bouton OK."""
+        popup = tk.Toplevel(self.racine)
+        popup.title(titre)
+        popup.resizable(False, False)
+        popup.transient(self.racine)
+
+        tk.Label(
+            popup,
+            text=texte,
+            padx=25,
+            pady=18,
+            font=("Arial", 10)
+        ).pack()
+
+        popup.update_idletasks()
+        x = self.racine.winfo_x() + (self.racine.winfo_width() // 2) - (popup.winfo_width() // 2)
+        y = self.racine.winfo_y() + (self.racine.winfo_height() // 2) - (popup.winfo_height() // 2)
+        popup.geometry(f"+{x}+{y}")
+
+        popup.after(duree, popup.destroy)
 
     def run(self):
         self.racine.mainloop()
 
 if __name__ == "__main__":
     Controle().run()
+
