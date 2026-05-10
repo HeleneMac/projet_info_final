@@ -95,4 +95,12 @@ class BatailleEngine:
                     return "TOUCHÉ"
 
         return "DANS L'EAU"
+    
+    def tous_coules(self) -> bool:
+        """vérifie que tous les bateaux soient coulés et renvoie True si 'est le cas"""
+        for bateau in self.bateaux_places:
+            for p in bateau:
+                if self.ma_grille[p] != "X":
+                    return False
+        return True
 

@@ -172,12 +172,22 @@ class Controle:
             self.mon_tour = True
             self.ui.set_titre("À VOUS DE JOUER !")
             self.afficher_notification("Alerte", f"L'adversaire a tiré en {ligne},{colonne} : {resultat} !")
+        
         elif data.startswith("RES:"):
             ligne_str: str
             colonne_str: str
             resultat_str: str
             ligne_str, colonne_str, resultat_str = data.split(":")[1].split(",")
             self.traiter_resultat_tir("adversaire", int(ligne_str), int(colonne_str), resultat_str)
+            if resultat_str == "COULÉ":
+                self.net.envoyer("CHECK_WIN")
+    
+        elif data == "CHECK_WIN":
+            if self.engine.tous_coules():
+                self.net.envoyer("YOU_WIN")
+    
+        elif data == "YOU_WIN":
+            self.racine.after(0, lambda: self.fin("Joueur"))
 
     def traiter_resultat_tir(self, grille: Grille, ligne: int, colonne: int, resultat: str) -> None:
         if resultat == "DÉJÀ TIRÉ":
@@ -188,7 +198,12 @@ class Controle:
 
         self.ui.colorier(grille, ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
         self.afficher_notification("Résultat", f"Tir en {ligne},{colonne} : {resultat}")
-
+        
+        if self.mode == "SOLO" and resultat == "COULÉ":
+            if self.engine_ia is not None and self.engine_ia.tous_coules():
+                self.racine.after(500, lambda: self.fin("Joueur"))
+                return
+        
         if self.mode == "MULTI" and not self.mon_tour:
             self.ui.set_titre("TOUR ADVERSAIRE")
 
@@ -207,7 +222,10 @@ class Controle:
             self.ui.colorier("moi", ligne, colonne, "red")
         else:
             self.ui.colorier("moi", ligne, colonne, "black")
-
+        
+        if resultat == "COULÉ" and self.engine.tous_coules():
+            self.racine.after(500, lambda: self.fin("Ordinateur"))
+            return
         self.afficher_notification("Tour ordinateur", f"L'ordinateur a tiré en {ligne},{colonne} : {resultat}")
         self.mon_tour = True
         self.ui.set_titre("À VOUS DE JOUER !")
@@ -232,7 +250,15 @@ class Controle:
         y: int = self.racine.winfo_y() + (self.racine.winfo_height() // 2) - (popup.winfo_height() // 2)
         popup.geometry(f"+{x}+{y}")
         popup.after(duree, popup.destroy)
-
+        
+    def fin(self, gagnant: str) -> None:
+        """Affiche le message de fin et ferme l'application."""
+        if self.mode == "MULTI":
+            self.net.envoyer(f"FIN:{gagnant}")
+        messagebox.showinfo("Fin de partie", f" {gagnant} a gagné la partie !")
+        self.racine.destroy()
+            
+    
     def run(self) -> None:
         self.racine.mainloop()
 
