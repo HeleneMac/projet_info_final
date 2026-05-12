@@ -1,28 +1,50 @@
 """
+PROJET : BATAILLE NAVALE
 Module : engine.py
-Gère les règles de placement flexible et la détection des tirs.
+Description : Gère les règles de placement et la détection des tirs.
+Fait par Chrstina et Bianca le 12.05.2026
 """
-from __future__ import annotations
 
+from __future__ import annotations
 import random
 from typing import Literal
 
-Position = tuple[int, int]
-ResultatTir = Literal["DÉJÀ TIRÉ", "COULÉ", "TOUCHÉ", "DANS L'EAU"]
-Orientation = Literal["H", "V"]
+POSITION = tuple[int, int]
+RESULTAT_TIR = Literal["DÉJÀ TIRÉ", "COULÉ", "TOUCHÉ", "DANS L'EAU"]
+ORIENTATION = Literal["H", "V"]
 
 
 class BatailleEngine:
+    """
+    Moteur logique gérant l'état d'une grille de jeu.
+    
+    Attributes:
+        ma_grille (dict): Positions occupées par les bateaux.
+        bateaux_places (list): Liste des coordonnées de chaque bateau.
+        tailles_a_placer (list): Liste des tailles des bateaux restant à poser.
+    """
+    
     def __init__(self) -> None:
-        self.ma_grille: dict[Position, str] = {}
-        self.bateaux_places: list[list[Position]] = []
+        """Initialise une nouvelle instance du moteur de jeu."""
+        self.ma_grille: dict[POSTION, str] = {}
+        self.bateaux_places: list[list[POSITION]] = []
         self.tailles_a_placer: list[int] = [1, 2, 3, 4, 5]
         self.index_taille: int = 0
-        self.bateau_en_cours: list[Position] = []
-        self.tirs_recus: set[Position] = set()
+        self.bateau_en_cours: list[POSITION] = []
+        self.tirs_recus: set[POSITION] = set()
 
     def valider_clic(self, l: int, c: int) -> tuple[bool, str]:
-        """Vérifie si la case (l,c) peut compléter le bateau en cours."""
+        """
+        Vérifie si la case (ligne, col) est valide pour le bateau actuel.
+
+        Args:
+            ligne (int): Coordonnée verticale.
+            col (int): Coordonnée horizontale.
+
+        Returns:
+            tuple[bool, str]: (Est valide, Message d'explication).
+        """
+
         if (l, c) in self.ma_grille:
             return False, "Case déjà occupée !"
 
@@ -51,6 +73,13 @@ class BatailleEngine:
         return True, "Ok"
 
     def ajouter_point(self, l: int, c: int) -> bool:
+        """
+        Ajoute une case au bateau en cours.
+
+        Returns:
+            bool: True si le bateau est terminé, False sinon.
+        """
+        
         self.bateau_en_cours.append((l, c))
         self.ma_grille[(l, c)] = "B"
 
@@ -63,10 +92,11 @@ class BatailleEngine:
         return False
 
     def placer_bateaux_aleatoire(self) -> None:
+        """Place automatiquement tous les bateaux (pour la version contre ordinateur)."""
         for taille in self.tailles_a_placer:
             place: bool = False
             while not place:
-                orient: Orientation = random.choice(["H", "V"])
+                orient: ORIENTATION = random.choice(["H", "V"])
                 l: int = random.randint(1, 10)
                 c: int = random.randint(1, 10)
                 pos: list[Position] = [
@@ -80,7 +110,14 @@ class BatailleEngine:
                     self.bateaux_places.append(pos)
                     place = True
 
-    def verifier_tir(self, l: int, c: int) -> ResultatTir:
+    def verifier_tir(self, l: int, c: int) -> RESULTAT_TIR:
+        """
+        Traite l'impact d'un tir sur la grille.
+
+        Returns:
+            RESULTAT_TIR: Résultat de l'attaque.
+        """
+        
         if (l, c) in self.tirs_recus:
             return "DÉJÀ TIRÉ"
 
@@ -97,7 +134,7 @@ class BatailleEngine:
         return "DANS L'EAU"
     
     def tous_coules(self) -> bool:
-        """vérifie que tous les bateaux soient coulés et renvoie True si 'est le cas"""
+        """Vérifie si la partie est terminée (tous les bateaux détruits)."""
         for bateau in self.bateaux_places:
             for p in bateau:
                 if self.ma_grille[p] != "X":
