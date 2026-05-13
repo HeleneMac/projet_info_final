@@ -231,7 +231,9 @@ class Controle:
             return
 
         self.ui.colorier(grille, ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
-        self.afficher_notification("Résultat", f"Tir en {ligne},{colonne} : {resultat}")
+        if resultat == "COULÉ":
+            self.afficher_notification("Résultat", f"Bateau {resultat}!!!")
+            
         
         if self.mode == "SOLO" and resultat == "COULÉ":
             if self.engine_ia is not None and self.engine_ia.tous_coules():
@@ -261,7 +263,8 @@ class Controle:
         if resultat == "COULÉ" and self.engine.tous_coules():
             self.racine.after(500, lambda: self.fin("Ordinateur"))
             return
-        self.afficher_notification("Tour ordinateur", f"L'ordinateur a tiré en {ligne},{colonne} : {resultat}")
+        if resultat == "COULÉ":
+            self.afficher_notification("Résultat", f"Bateau {resultat}!!!")
         self.mon_tour = True
         self.ui.set_titre("À VOUS DE JOUER !")
 
@@ -290,7 +293,7 @@ class Controle:
         """Affiche le message de fin et ferme l'application."""
         if self.mode == "MULTI":
             self.net.envoyer(f"FIN:{gagnant}")
-        messagebox.showinfo("Fin de partie", f" {gagnant} a gagné la partie !")
+        messagebox.showinfo("Fin de partie", f" {gagnant} a gagné la partie !")#ici gagnant doit être soit vous soit adversaire ou prénom
         self.racine.destroy()
             
     
