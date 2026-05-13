@@ -62,9 +62,9 @@ class BatailleEngine:
             return False, "La case doit toucher un morceau du bateau déjà placé !"
 
         # Vérifier l'alignement global : toutes les cases sur la même ligne ou colonne.
-        lignes: set[int] = {pos[0] for pos in self.bateau_en_cours}
+        lignes = {pos[0] for pos in self.bateau_en_cours}
         lignes.add(l)
-        colonnes: set[int] = {pos[1] for pos in self.bateau_en_cours}
+        colonnes = {pos[1] for pos in self.bateau_en_cours}
         colonnes.add(c)
 
         if len(lignes) > 1 and len(colonnes) > 1:
@@ -96,10 +96,10 @@ class BatailleEngine:
         for taille in self.tailles_a_placer:
             place: bool = False
             while not place:
-                orient: ORIENTATION = random.choice(["H", "V"])
-                l: int = random.randint(1, 10)
-                c: int = random.randint(1, 10)
-                pos: list[Position] = [
+                orient = random.choice(["H", "V"])
+                l = random.randint(1, 10)
+                ct = random.randint(1, 10)
+                pos = [
                     (l, c + i) if orient == "H" else (l + i, c)
                     for i in range(taille)
                 ]
