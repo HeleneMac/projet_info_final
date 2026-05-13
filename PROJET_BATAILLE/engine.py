@@ -26,12 +26,12 @@ class BatailleEngine:
     
     def __init__(self) -> None:
         """Initialise une nouvelle instance du moteur de jeu."""
-        self.ma_grille: dict[POSTION, str] = {}
-        self.bateaux_places: list[list[POSITION]] = []
-        self.tailles_a_placer: list[int] = [1, 2, 3, 4, 5]
-        self.index_taille: int = 0
-        self.bateau_en_cours: list[POSITION] = []
-        self.tirs_recus: set[POSITION] = set()
+        self.ma_grille = {}
+        self.bateaux_places = []
+        self.tailles_a_placer = [1, 2, 3, 4, 5]
+        self.index_taille = 0
+        self.bateau_en_cours = []
+        self.tirs_recus = set()
 
     def valider_clic(self, l: int, c: int) -> tuple[bool, str]:
         """

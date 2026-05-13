@@ -34,22 +34,22 @@ class Controle:
     
     def __init__(self) -> None:
         """Initialise les composants du jeu et prépare l'écran d'accueil."""
-        self.racine: tk.Tk = tk.Tk()
-        self.engine: BatailleEngine = BatailleEngine()
-        self.engine_ia: BatailleEngine | None = None
+        self.racine = tk.Tk()
+        self.engine = BatailleEngine()
+        self.engine_ia = None
         self.net: Connexion = Connexion()
         self.ui: BatailleUI = BatailleUI(self.racine, self.on_tir, self.on_place)
 
-        self.pret_moi: bool = False
-        self.pret_adv: bool = False
-        self.mon_tour: bool = False
-        self.mode: MODE_JEU | None = None
-        self.tirs_ordi: set[POSITION] = set()
-        self.tirs_joueur: set[POSITION] = set()
+        self.pret_moi = False
+        self.pret_adv = False
+        self.mon_tour = False
+        self.mode = None
+        self.tirs_ordi = set()
+        self.tirs_joueur = set()
 
-        self.texte: tk.Label = tk.Label(self.racine, text="Adresse de l'hôte:", font=30)
-        self.host_adresse: tk.Entry = tk.Entry(self.racine)
-        self.bouton_connexion: tk.Button = tk.Button(
+        self.texte = tk.Label(self.racine, text="Adresse de l'hôte:", font=30)
+        self.host_adresse = tk.Entry(self.racine)
+        self.bouton_connexion = tk.Button(
             self.racine,
             text="Connexion",
             command=self.connecter_client,

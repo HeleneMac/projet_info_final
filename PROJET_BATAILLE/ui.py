@@ -36,9 +36,9 @@ class BatailleUI:
             callback_tir (CALLBACKCASE): Fonction à appeler lors d'un tir.
             callback_placement (CALLBACKCASE): Fonction à appeler lors du placement.
         """
-        self.root: tk.Tk = root
-        self.boutons_ma_flotte: dict[POSITION, tk.Button] = {}
-        self.bateau_adversaire: dict[POSITION, tk.Button] = {}
+        self.root = root
+        self.boutons_ma_flotte = {}
+        self.bateau_adversaire = {}
 
         self.root.configure(bg="#263238")
         self.main_frame = tk.Frame(root, bg="#263238")
