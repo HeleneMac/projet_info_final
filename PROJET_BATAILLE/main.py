@@ -220,7 +220,12 @@ class Controle:
                 self.net.envoyer("YOU_WIN")
     
         elif data == "YOU_WIN":
+            self.net.envoyer("ADV_WIN")
             self.racine.after(0, lambda: self.fin("Vous avez"))
+        
+        elif data == "ADV_WIN":
+            self.racine.after(0,lambda: self.fin("L'adversaire a"))
+            
 
     def traiter_resultat_tir(self, grille: Grille, ligne: int, colonne: int, resultat: str) -> None:
         """Met à jour l'UI après un résultat de tir et vérifie la victoire en solo."""
