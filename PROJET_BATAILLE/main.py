@@ -131,7 +131,7 @@ class Controle:
                     self.ui.set_titre("À VOUS DE JOUER")
                 else:
                     self.ui.set_titre("ATTENTE ADVERSAIRE")
-                messagebox.showinfo("Début", "Tout le monde est prêt ! Attaquez !")
+                messagebox.showinfo("Début", "Tout le monde est prêt !L'hôte commence à attaquer !")
             elif self.pret_moi:
                 self.ui.set_titre("ATTENTE ADVERSAIRE")
                 messagebox.showinfo("Attente", "Vous avez fini ! On attend l'adversaire.")
@@ -204,7 +204,6 @@ class Controle:
             self.net.envoyer(f"RES:{ligne},{colonne},{resultat}")
             self.mon_tour = True
             self.ui.set_titre("À VOUS DE JOUER !")
-            #self.afficher_notification("Alerte", f"L'adversaire a tiré en {ligne},{colonne} : {resultat} !")
         
         elif data.startswith("RES:"):
             ligne_str: str
