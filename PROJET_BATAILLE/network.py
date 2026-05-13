@@ -28,11 +28,11 @@ class Connexion:
         Initialise le socket de base et prépare les variables d'état.
         """
         # Initialisation du socket TCP (AF_INET pour IPv4, SOCK_STREAM pour TCP)
-        self.server: socket.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # Option pour réutiliser l'adresse immédiatement après une fermeture
-        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.connexion: socket.socket | None = None
-        self.host: str | None = None
+        #self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.connexion = None
+        self.host = None
 
     def serveur(self, port: int) -> None:
         """
@@ -99,6 +99,7 @@ class Connexion:
                     break
 
         if self.connexion is not None:
+            #permet de faire fonctionner le programme en parrallèle
             thread: threading.Thread = threading.Thread(target=boucle_ecoute, daemon=True)
             thread.start()
 
