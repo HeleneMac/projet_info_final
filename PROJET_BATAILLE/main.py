@@ -296,8 +296,6 @@ class Controle:
         
     def fin(self, gagnant: str) -> None:
         """Affiche le message de fin et ferme l'application."""
-        if self.mode == "MULTI":
-            self.net.envoyer(f"FIN:{gagnant}")
         messagebox.showinfo("Fin de partie", f" {gagnant} gagné la partie !")#ici gagnant doit être soit vous soit adversaire ou prénom
         self.racine.destroy()
             
