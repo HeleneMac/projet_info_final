@@ -7,18 +7,17 @@ Fait par Chrstina et Bianca le 12.05.2026
 
 from __future__ import annotations
 import random
-from typing import Literal
 
 POSITION = tuple[int, int]
-RESULTAT_TIR = Literal["DÉJÀ TIRÉ", "COULÉ", "TOUCHÉ", "DANS L'EAU"]
-ORIENTATION = Literal["H", "V"]
+RESULTAT_TIR = ["DÉJÀ TIRÉ", "COULÉ", "TOUCHÉ", "DANS L'EAU"]
+ORIENTATION = ["H", "V"]
 
 
 class BatailleEngine:
     """
     Moteur logique gérant l'état d'une grille de jeu.
     
-    Attributes:
+    Attributs:
         ma_grille (dict): Positions occupées par les bateaux.
         bateaux_places (list): Liste des coordonnées de chaque bateau.
         tailles_a_placer (list): Liste des tailles des bateaux restant à poser.
@@ -33,46 +32,51 @@ class BatailleEngine:
         self.bateau_en_cours = []
         self.tirs_recus = set()
 
-    def valider_clic(self, l: int, c: int) -> tuple[bool, str]:
+    def valider_clic(self, ligne: int, colonne: int) -> tuple[bool, str]:
         """
-        Vérifie si la case (ligne, col) est valide pour le bateau actuel.
+        Vérifie si la case (ligne, colonne) est valide pour le bateau actuel.
 
         Args:
             ligne (int): Coordonnée verticale.
-            col (int): Coordonnée horizontale.
+            colone (int): Coordonnée horizontale.
 
         Returns:
             tuple[bool, str]: (Est valide, Message d'explication).
         """
 
-        if (l, c) in self.ma_grille:
+        if (ligne, colonne) in self.ma_grille:
             return False, "Case déjà occupée !"
 
         if len(self.bateau_en_cours) == 0:
             return True, "Premier point"
 
-        # Vérifier si la case touche au moins UNE des cases déjà placées.
-        touche_un_morceau: bool = False
+        # Vérifier si la case touche au moins UNE des cases déjà placées.abs indique une valeure absolue
+        touche_un_morceau = False
         for bl, bc in self.bateau_en_cours:
-            if (abs(l - bl) == 1 and c == bc) or (abs(c - bc) == 1 and l == bl):
+            if (abs(ligne - bl) == 1 and colonne == bc) or (abs(colonne - bc) == 1 and ligne == bl):
                 touche_un_morceau = True
                 break
 
-        if not touche_un_morceau:
+        if touche_un_morceau == False :
             return False, "La case doit toucher un morceau du bateau déjà placé !"
 
-        # Vérifier l'alignement global : toutes les cases sur la même ligne ou colonne.
-        lignes = {pos[0] for pos in self.bateau_en_cours}
-        lignes.add(l)
-        colonnes = {pos[1] for pos in self.bateau_en_cours}
-        colonnes.add(c)
+       # Vérifier l'alignement global : toutes les cases sur la même ligne ou colonne.
+        lignes = set()
+        colonnes = set()
+        
+        for pos in self.bateau_en_cours:
+            lignes.add(pos[0])
+            colonnes.add(pos[1])
+        
+        lignes.add(ligne)
+        colonnes.add(colonne)
 
         if len(lignes) > 1 and len(colonnes) > 1:
             return False, "Le bateau doit être en ligne droite (Horizontal ou Vertical) !"
-
+            
         return True, "Ok"
 
-    def ajouter_point(self, l: int, c: int) -> bool:
+    def ajouter_point(self, ligne: int, colonne: int) -> bool:
         """
         Ajoute une case au bateau en cours.
 
@@ -80,8 +84,8 @@ class BatailleEngine:
             bool: True si le bateau est terminé, False sinon.
         """
         
-        self.bateau_en_cours.append((l, c))
-        self.ma_grille[(l, c)] = "B"
+        self.bateau_en_cours.append((ligne, colonne))
+        self.ma_grille[(ligne, colonne)] = "B"
 
         if len(self.bateau_en_cours) == self.tailles_a_placer[self.index_taille]:
             self.bateaux_places.append(list(self.bateau_en_cours))
@@ -94,13 +98,13 @@ class BatailleEngine:
     def placer_bateaux_aleatoire(self) -> None:
         """Place automatiquement tous les bateaux (pour la version contre ordinateur)."""
         for taille in self.tailles_a_placer:
-            place: bool = False
-            while not place:
+            place = False
+            while place == False:
                 orient = random.choice(["H", "V"])
-                l = random.randint(1, 10)
-                ct = random.randint(1, 10)
+                ligne = random.randint(1, 10)
+                colonne = random.randint(1, 10)
                 pos = [
-                    (l, c + i) if orient == "H" else (l + i, c)
+                    (ligne, colonne + i) if orient == "H" else (ligne + i, colonne)
                     for i in range(taille)
                 ]
 
@@ -110,7 +114,7 @@ class BatailleEngine:
                     self.bateaux_places.append(pos)
                     place = True
 
-    def verifier_tir(self, l: int, c: int) -> RESULTAT_TIR:
+    def verifier_tir(self, ligne: int, colonne: int) -> RESULTAT_TIR:
         """
         Traite l'impact d'un tir sur la grille.
 
@@ -118,15 +122,15 @@ class BatailleEngine:
             RESULTAT_TIR: Résultat de l'attaque.
         """
         
-        if (l, c) in self.tirs_recus:
+        if (ligne, colonne) in self.tirs_recus:
             return "DÉJÀ TIRÉ"
 
-        self.tirs_recus.add((l, c))
+        self.tirs_recus.add((ligne, colonne))
 
-        if (l, c) in self.ma_grille:
-            self.ma_grille[(l, c)] = "X"
+        if (ligne, colonne) in self.ma_grille:
+            self.ma_grille[(ligne, colonne)] = "X"
             for bateau in self.bateaux_places:
-                if (l, c) in bateau:
+                if (ligne, colonne) in bateau:
                     if all(self.ma_grille[p] == "X" for p in bateau):
                         return "COULÉ"
                     return "TOUCHÉ"

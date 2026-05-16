@@ -37,8 +37,8 @@ class Controle:
         self.racine = tk.Tk()
         self.engine = BatailleEngine()
         self.engine_ia = None
-        self.net: Connexion = Connexion()
-        self.ui: BatailleUI = BatailleUI(self.racine, self.on_tir, self.on_place)
+        self.net = Connexion()
+        self.ui = BatailleUI(self.racine, self.on_tir, self.on_place)
 
         self.pret_moi = False
         self.pret_adv = False
@@ -46,6 +46,8 @@ class Controle:
         self.mode = None
         self.tirs_ordi = set()
         self.tirs_joueur = set()
+        self.strat_ordi = []
+        
 
         self.texte = tk.Label(self.racine, text="Adresse de l'hôte:", font=30)
         self.host_adresse = tk.Entry(self.racine)
@@ -249,26 +251,44 @@ class Controle:
 
     def faire_jouer_ordi(self) -> None:
         """Simule un tir aléatoire de l'intelligence artificielle."""
-        ligne: int = random.randint(1, 10)
-        colonne: int = random.randint(1, 10)
-
-        while (ligne, colonne) in self.tirs_ordi:
+        #si la liste strat ordi n'est pas vide l'ordi va essayer en priorité les case enregistrées dans celle-ci
+        if len(self.strat_ordi) != 0:
+            case = self.strat_ordi.pop(0)
+            ligne = case[0]
+            colonne = case[1]
+        else:
             ligne = random.randint(1, 10)
             colonne = random.randint(1, 10)
+            while (ligne, colonne) in self.tirs_ordi:
+                ligne = random.randint(1, 10)
+                colonne = random.randint(1, 10)
 
         self.tirs_ordi.add((ligne, colonne))
-        resultat: ResultatTir = self.engine.verifier_tir(ligne, colonne)
-
+        resultat = self.engine.verifier_tir(ligne, colonne)
+        #rend l'ordi plus intélligent en ajoutant les cases autour d'une case touchée dans une liste stratégie
         if resultat in ["TOUCHÉ", "COULÉ"]:
             self.ui.colorier("moi", ligne, colonne, "red")
+            if ligne - 1 >= 1:
+                self.strat_ordi.append((ligne - 1,colonne))
+            if ligne + 1 <= 10:
+                self.strat_ordi.append((ligne + 1,colonne))
+            if colonne - 1 >= 1:
+                self.strat_ordi.append((ligne,colonne - 1))
+            if colonne + 1 <= 10:
+                self.strat_ordi.append((ligne,colonne + 1))
+            
         else:
             self.ui.colorier("moi", ligne, colonne, "black")
+        
+        
+        if resultat == "COULÉ":
+            self.afficher_notification("Résultat", f"Bateau {resultat}!!!")
+            
         
         if resultat == "COULÉ" and self.engine.tous_coules():
             self.racine.after(500, lambda: self.fin("Ordinateur a"))
             return
-        if resultat == "COULÉ":
-            self.afficher_notification("Résultat", f"Bateau {resultat}!!!")
+        
         self.mon_tour = True
         self.ui.set_titre("À VOUS DE JOUER !")
 
