@@ -193,10 +193,8 @@ class Controle:
             self.pret_adv = True
             self.racine.after(0, self.verifier_demarrage)
         elif data.startswith("TIR:"):
-            ligne: int
-            colonne: int
             ligne, colonne = map(int, data.split(":")[1].split(","))
-            resultat: ResultatTir = self.engine.verifier_tir(ligne, colonne)
+            resultat = self.engine.verifier_tir(ligne, colonne)
 
             if resultat in ["TOUCHÉ", "COULÉ"]:
                 self.ui.colorier("moi", ligne, colonne, "red")
@@ -256,6 +254,11 @@ class Controle:
             case = self.strat_ordi.pop(0)
             ligne = case[0]
             colonne = case[1]
+            #vérifier que la case n'a pas déjà été tirée
+            while (ligne, colonne) in self.tirs_ordi and len(self.strat_ordi) > 0:
+                case = self.strat_ordi.pop(0)
+                ligne = case[0]
+                colonne = case[1]
         else:
             ligne = random.randint(1, 10)
             colonne = random.randint(1, 10)
@@ -265,6 +268,7 @@ class Controle:
 
         self.tirs_ordi.add((ligne, colonne))
         resultat = self.engine.verifier_tir(ligne, colonne)
+        
         #rend l'ordi plus intélligent en ajoutant les cases autour d'une case touchée dans une liste stratégie
         if resultat in ["TOUCHÉ", "COULÉ"]:
             self.ui.colorier("moi", ligne, colonne, "red")
@@ -294,7 +298,7 @@ class Controle:
 
     def afficher_notification(self, titre: str, texte: str, duree: int = 1800) -> None:
         """Affiche un popup temporaire au centre de l'écran."""
-        popup: tk.Toplevel = tk.Toplevel(self.racine)
+        popup = tk.Toplevel(self.racine)
         popup.title(titre)
         popup.resizable(False, False)
         popup.transient(self.racine)

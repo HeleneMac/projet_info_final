@@ -50,7 +50,8 @@ class BatailleEngine:
         if len(self.bateau_en_cours) == 0:
             return True, "Premier point"
 
-        # Vérifier si la case touche au moins UNE des cases déjà placées.abs indique une valeure absolue
+        # Vérifier si la case touche au moins UNE des cases déjà placées.
+        #abs indique une valeure absolue
         touche_un_morceau = False
         for bl, bc in self.bateau_en_cours:
             if (abs(ligne - bl) == 1 and colonne == bc) or (abs(colonne - bc) == 1 and ligne == bl):
@@ -96,27 +97,40 @@ class BatailleEngine:
         return False
 
     def placer_bateaux_aleatoire(self) -> None:
-        """Place automatiquement tous les bateaux (pour la version contre ordinateur)."""
+        """Place automatiquement tous les bateaux
+            (pour la version contre ordinateur)."""
         for taille in self.tailles_a_placer:
             place = False
             while place == False:
                 orient = random.choice(["H", "V"])
                 ligne = random.randint(1, 10)
                 colonne = random.randint(1, 10)
-                pos = [
-                    (ligne, colonne + i) if orient == "H" else (ligne + i, colonne)
-                    for i in range(taille)
-                ]
+                pos = []
+                for i in range(taille):
+                    if orient == "H":
+                        pos.append((ligne,colonne + i))
+                    else:
+                        pos.append((ligne + i,colonne))
+                    
+                valide = True
 
-                if all(1 <= p[0] <= 10 and 1 <= p[1] <= 10 and p not in self.ma_grille for p in pos):
+                #s'assure qu'un point ne va en dessous de 1 ni ne dépasse 10
+                #et qu'il ne soit pas déjà placé    
+                for p in pos:
+                    if p[0]< 1 or p[0]>10 or p[1]<1 or p[1]>10 or p in self.ma_grille:
+                        valide = False
+                #tant qu'une case qui porte un bateau n'est pas encore touchée,
+                #elle porte la marque "B"
+                if valide:
                     for p in pos:
-                        self.ma_grille[p] = "B"
+                        self.ma_grille[p]="B"
                     self.bateaux_places.append(pos)
                     place = True
 
     def verifier_tir(self, ligne: int, colonne: int) -> RESULTAT_TIR:
         """
-        Traite l'impact d'un tir sur la grille.
+        Vérifie l'éffet d'un tir
+        ( aucun (déjà tiré),touché, coulé ou dans l'eau)
 
         Returns:
             RESULTAT_TIR: Résultat de l'attaque.
@@ -126,15 +140,21 @@ class BatailleEngine:
             return "DÉJÀ TIRÉ"
 
         self.tirs_recus.add((ligne, colonne))
-
+        
+        #lorsqu'une case est touchée elle prend la marque X
         if (ligne, colonne) in self.ma_grille:
             self.ma_grille[(ligne, colonne)] = "X"
+            
             for bateau in self.bateaux_places:
                 if (ligne, colonne) in bateau:
-                    if all(self.ma_grille[p] == "X" for p in bateau):
+                    coule = True
+                    for p in bateau:
+                        if self.ma_grille[p] != "X":
+                            coule = False
+                    if coule:
                         return "COULÉ"
                     return "TOUCHÉ"
-
+                    
         return "DANS L'EAU"
     
     def tous_coules(self) -> bool:
