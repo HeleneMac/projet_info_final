@@ -99,6 +99,6 @@ class Connexion:
 
         if self.connexion is not None:
             #permet de faire fonctionner le programme en parrallèle
-            thread: threading.Thread = threading.Thread(target=boucle_ecoute, daemon=True)
+            thread = threading.Thread(target=boucle_ecoute, daemon=True)
             thread.start()
 
