@@ -2,7 +2,7 @@
 PROJET : BATAILLE NAVALE
 Module : ui.py
 Description : Interface graphique (GUI) gérant l'affichage des grilles et des boutons.
-Fait par Bianca le 12.05.2026
+Fait par Bianca et Christina le 12.05.2026
 """
 
 from __future__ import annotations
