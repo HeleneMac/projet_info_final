@@ -42,8 +42,9 @@ class Connexion:
         self.host = socket.gethostbyname(socket.gethostname())
         self.server.bind((self.host, port))
         self.server.listen(1)
-        messagebox.showinfo("Connexion",
-                            f"En attente de connexion...\nAdresse hôte : {self.host}")
+        messagebox.showinfo(
+            "Connexion",
+            f"En attente de connexion...\nAdresse hôte : {self.host}")
         # Bloque l'exécution jusqu'à ce qu'un client se connecte
         self.connexion, adresse = self.server.accept()
         messagebox.showinfo("Connexion",

@@ -54,27 +54,30 @@ class BatailleEngine:
         #abs indique une valeure absolue
         touche_un_morceau = False
         for bl, bc in self.bateau_en_cours:
-            if (abs(ligne - bl) == 1 and colonne == bc) or (abs(colonne - bc) == 1 and ligne == bl):
+            if (
+                (abs(ligne - bl) == 1 and colonne == bc)
+                or
+                (abs(colonne - bc) == 1 and ligne == bl)):
                 touche_un_morceau = True
                 break
 
         if touche_un_morceau == False :
-            return False, "La case doit toucher un morceau du bateau déjà placé !"
-
-       # Vérifier l'alignement global : toutes les cases sur la même ligne ou colonne.
+            return (False,
+                    "La case doit toucher un morceau du bateau déjà placé !")
+       # Vérifier l'alignement global :
+       #toutes les cases sur la même ligne ou colonne.
         lignes = set()
-        colonnes = set()
-        
+        colonnes = set() 
         for pos in self.bateau_en_cours:
             lignes.add(pos[0])
             colonnes.add(pos[1])
-        
         lignes.add(ligne)
         colonnes.add(colonne)
 
         if len(lignes) > 1 and len(colonnes) > 1:
-            return False, "Le bateau doit être en ligne droite (Horizontal ou Vertical) !"
-            
+            return (
+                False,
+                "Le bateau doit être en ligne droite (Horizontal ou Vertical)!")  
         return True, "Ok"
 
     def ajouter_point(self, ligne: int, colonne: int) -> bool:
@@ -84,11 +87,11 @@ class BatailleEngine:
         Returns:
             bool: True si le bateau est terminé, False sinon.
         """
-        
         self.bateau_en_cours.append((ligne, colonne))
         self.ma_grille[(ligne, colonne)] = "B"
 
-        if len(self.bateau_en_cours) == self.tailles_a_placer[self.index_taille]:
+        if len(self.bateau_en_cours) == (
+            self.tailles_a_placer[self.index_taille]):
             self.bateaux_places.append(list(self.bateau_en_cours))
             self.bateau_en_cours = []
             self.index_taille += 1
@@ -117,7 +120,8 @@ class BatailleEngine:
                 #s'assure qu'un point ne va en dessous de 1 ni ne dépasse 10
                 #et qu'il ne soit pas déjà placé    
                 for p in pos:
-                    if p[0]< 1 or p[0]>10 or p[1]<1 or p[1]>10 or p in self.ma_grille:
+                    if (p[0]< 1 or p[0]>10 or p[1]<1 or p[1]>10
+                        or p in self.ma_grille):
                         valide = False
                 #tant qu'une case qui porte un bateau n'est pas encore touchée,
                 #elle porte la marque "B"

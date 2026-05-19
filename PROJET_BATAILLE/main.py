@@ -28,7 +28,8 @@ class Controle:
     Attributes:
         racine (tk.Tk): Fenêtre principale.
         engine (BatailleEngine): Moteur pour la grille du joueur.
-        engine_ia (BatailleEngine): Moteur pour la grille adverse (en mode Solo).
+        engine_ia (BatailleEngine): Moteur pour la grille adverse
+        (en mode Solo).
         net (Connexion): Gestionnaire de communication réseau.
         ui (BatailleUI): Gestionnaire de l'interface graphique.
     """
@@ -93,7 +94,8 @@ class Controle:
         """Établit la connexion avec l'hôte et retire les champs de saisie."""
         self.net.client(self.host_adresse.get(), PORT_SERVEUR)
         self.net.ecouter(self.handle_data)
-        messagebox.showinfo("Placer bateaux", "Connecté ! Placez vos bateaux !")
+        messagebox.showinfo("Placer bateaux",
+                            "Connecté ! Placez vos bateaux !")
 
     def on_place(self, ligne: int, colonne: int) -> None:
         """
@@ -119,8 +121,9 @@ class Controle:
         if fini:
             if self.engine.index_taille < len(self.engine.tailles_a_placer):
                 taille = self.engine.tailles_a_placer[self.engine.index_taille]
-                messagebox.showinfo("Suivant",
-                                    f"Bateau terminé. Placez le suivant (taille {taille})")
+                messagebox.showinfo(
+                    "Suivant",
+                    f"Bateau terminé. Placez le suivant (taille {taille})")
             else:
                 self.pret_moi = True
                 if self.mode == "MULTI":
@@ -134,8 +137,9 @@ class Controle:
                     self.ui.set_titre("À VOUS DE JOUER")
                 else:
                     self.ui.set_titre("ATTENTE ADVERSAIRE")
-                messagebox.showinfo("Début",
-                                    "Tout le monde est prêt!L'hôte commence à attaquer !")
+                messagebox.showinfo(
+                    "Début",
+                    "Tout le monde est prêt!L'hôte commence à attaquer !")
             elif self.pret_moi:
                 self.ui.set_titre("ATTENTE ADVERSAIRE")
                 messagebox.showinfo("Attente",
@@ -161,8 +165,9 @@ class Controle:
             return
         
         if (ligne, colonne) in self.tirs_joueur:
-            self.afficher_notification("Déjà tiré",
-                                       "Déjà tiré sur cette case, choisissez une autre case.")
+            self.afficher_notification(
+                "Déjà tiré",
+                "Déjà tiré sur cette case, choisissez une autre case.")
             self.ui.set_titre("À VOUS DE JOUER !")
             return
         self.tirs_joueur.add((ligne, colonne))
@@ -232,8 +237,9 @@ class Controle:
         """Met à jour l'UI après un résultat de tir et
                 vérifie la victoire en solo."""
         if resultat == "DÉJÀ TIRÉ":
-            self.afficher_notification("Déjà tiré",
-                                       "Déjà tiré sur cette case, choisissez une autre case.")
+            self.afficher_notification(
+                "Déjà tiré",
+                "Déjà tiré sur cette case, choisissez une autre case.")
             self.mon_tour = True
             self.ui.set_titre("À VOUS DE JOUER !")
             return
@@ -312,8 +318,10 @@ class Controle:
             font=("Arial", 10),
         ).pack()
         popup.update_idletasks()
-        x = self.racine.winfo_x() +(self.racine.winfo_width() // 2) -(popup.winfo_width() // 2)
-        y = self.racine.winfo_y() + (self.racine.winfo_height() // 2) - (popup.winfo_height() // 2)
+        x = self.racine.winfo_x() +(self.racine.winfo_width() // 2) -(
+            popup.winfo_width() // 2)
+        y = self.racine.winfo_y() + (self.racine.winfo_height() // 2) - (
+            popup.winfo_height() // 2)
         popup.geometry(f"+{x}+{y}")
         popup.after(duree, popup.destroy)
         
