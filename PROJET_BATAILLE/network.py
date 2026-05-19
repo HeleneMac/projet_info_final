@@ -42,10 +42,12 @@ class Connexion:
         self.host = socket.gethostbyname(socket.gethostname())
         self.server.bind((self.host, port))
         self.server.listen(1)
-        messagebox.showinfo("Connexion", f"En attente de connexion...\nAdresse hôte : {self.host}")
+        messagebox.showinfo("Connexion",
+                            f"En attente de connexion...\nAdresse hôte : {self.host}")
         # Bloque l'exécution jusqu'à ce qu'un client se connecte
         self.connexion, adresse = self.server.accept()
-        messagebox.showinfo("Connexion", f"Connexion réussie avec {adresse[0]}")
+        messagebox.showinfo("Connexion",
+                            f"Connexion réussie avec {adresse[0]}")
         messagebox.showinfo("Début", "Commencez à placer vos bateaux")
 
     def client(self, host_adresse: str, port: int) -> None:
@@ -72,10 +74,12 @@ class Connexion:
 
     def ecouter(self, callback: CALLBACK_MESSAGE) -> None:
         """
-        Lance une boucle d'écoute dans un thread séparé pour recevoir les messages.
+        Lance une boucle d'écoute dans un thread séparé pour recevoir
+        les messages.
 
         Args:
-            callback (CALLBACK_MESSAGE): Fonction à appeler quand un message arrive.
+            callback (CALLBACK_MESSAGE): Fonction à appeler
+            quand un message arrive.
         """
         
         def boucle_ecoute() -> None:
