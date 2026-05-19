@@ -2,7 +2,7 @@
 PROJET : BATAILLE NAVALE
 Module : engine.py
 Description : Gère les règles de placement et la détection des tirs.
-Fait par Chrstina et Bianca le 12.05.2026
+Fait par Christina et Bianca le 12.05.2026
 """
 
 from __future__ import annotations
