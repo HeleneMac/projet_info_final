@@ -28,6 +28,8 @@ class Connexion:
         Initialise le socket de base et prépare les variables d'état.
         """
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+         # Option pour réutiliser l'adresse immédiatement après une fermeture
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.connexion = None
         self.host = None
 
