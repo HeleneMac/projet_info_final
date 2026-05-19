@@ -1,7 +1,8 @@
 """
 PROJET : BATAILLE NAVALE
 Module : main.py
-Description : Contrôleur principal orchestrant la logique de jeu, les tours et le réseau.
+Description : Contrôleur principal orchestrant la logique de jeu,
+les tours et le réseau.
 Fait par Hélène, Bianca et Christina
 """
 
@@ -22,8 +23,8 @@ POSITION = tuple[int, int]
 
 class Controle:
     """
-    Classe pivot (Contrôleur) gérant les interactions entre l'utilisateur et le moteur.
-    
+    Classe pivot (Contrôleur) gérant les interactions entre l'utilisateur
+    et le moteur.
     Attributes:
         racine (tk.Tk): Fenêtre principale.
         engine (BatailleEngine): Moteur pour la grille du joueur.
@@ -60,23 +61,24 @@ class Controle:
         self.config_initiale()
 
     def config_initiale(self) -> None:
-        """Détermine le mode de jeu et initialise les serveurs ou la version contre l'ordinateur."""
+        """Détermine le mode de jeu et initialise
+            les serveurs ou la version contre l'ordinateur."""
         print("\n" + "=" * 40)
         print(" BIENVENUE DANS LA BATAILLE NAVALE")
         print("=" * 40)
-
-        choix: bool = messagebox.askyesno("Seul/Multijoueur", "Jouez-vous seul ?")
-
+        choix = messagebox.askyesno("Seul/Multijoueur", "Jouez-vous seul ?")
         if choix:
             self.mode = "SOLO"
             self.pret_adv = True
             self.engine_ia = BatailleEngine()
             self.engine_ia.placer_bateaux_aleatoire()
             self.mon_tour = True
-            messagebox.showinfo("Placer bateaux", "Mode Solo : Placez vos bateaux !")
+            messagebox.showinfo("Placer bateaux",
+                                "Mode Solo :Placez vos bateaux !")
         else:
             self.mode = "MULTI"
-            role: bool = messagebox.askyesno("Client/Serveur", "Êtes-vous l'hôte ?")
+            role: bool = messagebox.askyesno("Client/Serveur",
+                                             "Êtes-vous l'hôte ?")
             if role:
                 self.net.serveur(PORT_SERVEUR)
                 self.net.ecouter(self.handle_data)
@@ -103,29 +105,28 @@ class Controle:
         """
         if self.pret_moi:
             return
-
+        
         valide: bool
         msg: str
         valide, msg = self.engine.valider_clic(ligne, colonne)
-
+        
         if not valide:
             messagebox.showwarning("Attention", msg)
             return
-
-        fini: bool = self.engine.ajouter_point(ligne, colonne)
+        fini = self.engine.ajouter_point(ligne, colonne)
         self.ui.colorier("moi", ligne, colonne, "blue")
-
+        
         if fini:
             if self.engine.index_taille < len(self.engine.tailles_a_placer):
-                taille: int = self.engine.tailles_a_placer[self.engine.index_taille]
-                messagebox.showinfo("Suivant", f"Bateau terminé. Placez le suivant (taille {taille})")
+                taille = self.engine.tailles_a_placer[self.engine.index_taille]
+                messagebox.showinfo("Suivant",
+                                    f"Bateau terminé. Placez le suivant (taille {taille})")
             else:
                 self.pret_moi = True
                 if self.mode == "MULTI":
                     self.net.envoyer("READY")
                 self.verifier_demarrage()
-                
-                
+                  
     def verifier_demarrage(self) -> None:
             """Vérifie si la phase d'attaque peut commencer."""
             if self.pret_moi and self.pret_adv:
@@ -133,14 +134,15 @@ class Controle:
                     self.ui.set_titre("À VOUS DE JOUER")
                 else:
                     self.ui.set_titre("ATTENTE ADVERSAIRE")
-                messagebox.showinfo("Début", "Tout le monde est prêt !L'hôte commence à attaquer !")
+                messagebox.showinfo("Début",
+                                    "Tout le monde est prêt!L'hôte commence à attaquer !")
             elif self.pret_moi:
                 self.ui.set_titre("ATTENTE ADVERSAIRE")
-                messagebox.showinfo("Attente", "Vous avez fini ! On attend l'adversaire.")
+                messagebox.showinfo("Attente",
+                                    "Vous avez fini ! On attend l'adversaire.")
             else:
                 self.ui.set_titre("PLACEZ VOS BATEAUX")
             
-
     def on_tir(self, ligne: int, colonne: int) -> None:
         """
         Gère la tentative de tir sur la grille adverse.
@@ -149,32 +151,31 @@ class Controle:
             ligne, colonne: Coordonnées de la cible.
         """
         if not self.pret_moi or not self.pret_adv:
-            self.afficher_notification("Attente", "Le placement n'est pas fini !")
+            self.afficher_notification("Attente",
+                                       "Le placement n'est pas fini !")
             return
-
+        
         if not self.mon_tour:
-            self.afficher_notification("Tour", "C'est le tour de l'adversaire !")
+            self.afficher_notification("Tour",
+                                       "C'est le tour de l'adversaire !")
             return
-
+        
         if (ligne, colonne) in self.tirs_joueur:
-            self.afficher_notification("Déjà tiré", "Déjà tiré sur cette case, choisissez une autre case.")
+            self.afficher_notification("Déjà tiré",
+                                       "Déjà tiré sur cette case, choisissez une autre case.")
             self.ui.set_titre("À VOUS DE JOUER !")
             return
-
         self.tirs_joueur.add((ligne, colonne))
-
+        
         if self.mode == "SOLO":
             if self.engine_ia is None:
                 return
-
-            resultat: ResultatTir = self.engine_ia.verifier_tir(ligne, colonne)
+            resultat = self.engine_ia.verifier_tir(ligne, colonne)
             self.traiter_resultat_tir("adversaire", ligne, colonne, resultat)
-
             if resultat == "DÉJÀ TIRÉ":
                 self.mon_tour = True
                 self.ui.set_titre("À VOUS DE JOUER !")
                 return
-
             self.mon_tour = False
             self.racine.after(800, self.faire_jouer_ordi)
         else:
@@ -192,16 +193,14 @@ class Controle:
         if data == "READY":
             self.pret_adv = True
             self.racine.after(0, self.verifier_demarrage)
-        
+            
         elif data.startswith("TIR:"):
             ligne, colonne = map(int, data.split(":")[1].split(","))
             resultat = self.engine.verifier_tir(ligne, colonne)
-
             if resultat in ["TOUCHÉ", "COULÉ"]:
                 self.ui.colorier("moi", ligne, colonne, "red")
             else:
                 self.ui.colorier("moi", ligne, colonne, "black")
-
             self.net.envoyer(f"RES:{ligne},{colonne},{resultat}")
             self.mon_tour = True
             self.ui.set_titre("À VOUS DE JOUER !")
@@ -211,7 +210,9 @@ class Controle:
             colonne_str: str
             resultat_str: str
             ligne_str, colonne_str, resultat_str = data.split(":")[1].split(",")
-            self.traiter_resultat_tir("adversaire", int(ligne_str), int(colonne_str), resultat_str)
+            self.traiter_resultat_tir("adversaire",
+                                      int(ligne_str),
+                                      int(colonne_str), resultat_str)
             if resultat_str == "COULÉ":
                 self.net.envoyer("CHECK_WIN")
     
@@ -226,20 +227,22 @@ class Controle:
         elif data == "ADV_WIN":
             self.racine.after(0,lambda: self.fin("L'adversaire a"))
             
-
-    def traiter_resultat_tir(self, grille: Grille, ligne: int, colonne: int, resultat: str) -> None:
-        """Met à jour l'UI après un résultat de tir et vérifie la victoire en solo."""
+    def traiter_resultat_tir(self, grille: Grille, ligne: int,
+                             colonne: int, resultat: str) -> None:
+        """Met à jour l'UI après un résultat de tir et
+                vérifie la victoire en solo."""
         if resultat == "DÉJÀ TIRÉ":
-            self.afficher_notification("Déjà tiré", "Déjà tiré sur cette case, choisissez une autre case.")
+            self.afficher_notification("Déjà tiré",
+                                       "Déjà tiré sur cette case, choisissez une autre case.")
             self.mon_tour = True
             self.ui.set_titre("À VOUS DE JOUER !")
             return
-
-        self.ui.colorier(grille, ligne, colonne, "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
+        self.ui.colorier(grille, ligne, colonne,
+                         "red" if resultat in ["TOUCHÉ", "COULÉ"] else "black")
+        
         if resultat == "COULÉ":
             self.afficher_notification("Résultat", f"Bateau {resultat}!!!")
-            
-        
+
         if self.mode == "SOLO" and resultat == "COULÉ":
             if self.engine_ia is not None and self.engine_ia.tous_coules():
                 self.racine.after(500, lambda: self.fin("Vous avez"))
@@ -250,7 +253,8 @@ class Controle:
 
     def faire_jouer_ordi(self) -> None:
         """Simule un tir aléatoire de l'intelligence artificielle."""
-        #si la liste strat ordi n'est pas vide l'ordi va essayer en priorité les case enregistrées dans celle-ci
+        #si la liste strat ordi n'est pas vide l'ordi va essayer
+        #en priorité les case enregistrées dans celle-ci
         if len(self.strat_ordi) != 0:
             case = self.strat_ordi.pop(0)
             ligne = case[0]
@@ -266,11 +270,11 @@ class Controle:
             while (ligne, colonne) in self.tirs_ordi:
                 ligne = random.randint(1, 10)
                 colonne = random.randint(1, 10)
-
         self.tirs_ordi.add((ligne, colonne))
         resultat = self.engine.verifier_tir(ligne, colonne)
         
-        #rend l'ordi plus intélligent en ajoutant les cases autour d'une case touchée dans une liste stratégie
+        #rend l'ordi plus intélligent en ajoutant les cases
+        #autour d'une case touchée dans une liste stratégie
         if resultat in ["TOUCHÉ", "COULÉ"]:
             self.ui.colorier("moi", ligne, colonne, "red")
             if ligne - 1 >= 1:
@@ -281,29 +285,25 @@ class Controle:
                 self.strat_ordi.append((ligne,colonne - 1))
             if colonne + 1 <= 10:
                 self.strat_ordi.append((ligne,colonne + 1))
-            
         else:
             self.ui.colorier("moi", ligne, colonne, "black")
-        
         
         if resultat == "COULÉ":
             self.afficher_notification("Résultat", f"Bateau {resultat}!!!")
             
-        
         if resultat == "COULÉ" and self.engine.tous_coules():
             self.racine.after(500, lambda: self.fin("Ordinateur a"))
             return
-        
         self.mon_tour = True
         self.ui.set_titre("À VOUS DE JOUER !")
 
-    def afficher_notification(self, titre: str, texte: str, duree: int = 1800) -> None:
+    def afficher_notification(self, titre: str, texte: str,
+                              duree: int = 1800) -> None:
         """Affiche un popup temporaire au centre de l'écran."""
         popup = tk.Toplevel(self.racine)
         popup.title(titre)
         popup.resizable(False, False)
         popup.transient(self.racine)
-
         tk.Label(
             popup,
             text=texte,
@@ -311,19 +311,17 @@ class Controle:
             pady=18,
             font=("Arial", 10),
         ).pack()
-
         popup.update_idletasks()
-        x: int = self.racine.winfo_x() + (self.racine.winfo_width() // 2) - (popup.winfo_width() // 2)
-        y: int = self.racine.winfo_y() + (self.racine.winfo_height() // 2) - (popup.winfo_height() // 2)
+        x = self.racine.winfo_x() +(self.racine.winfo_width() // 2) -(popup.winfo_width() // 2)
+        y = self.racine.winfo_y() + (self.racine.winfo_height() // 2) - (popup.winfo_height() // 2)
         popup.geometry(f"+{x}+{y}")
         popup.after(duree, popup.destroy)
         
     def fin(self, gagnant: str) -> None:
         """Affiche le message de fin et ferme l'application."""
-        messagebox.showinfo("Fin de partie", f" {gagnant} gagné la partie !")#ici gagnant doit être soit vous soit adversaire ou prénom
+        messagebox.showinfo("Fin de partie", f" {gagnant} gagné la partie !")
         self.racine.destroy()
             
-    
     def run(self) -> None:
         """Démarre l'application."""
         self.racine.mainloop()
