@@ -47,13 +47,10 @@ class BatailleUI:
         self.root = root
         self.boutons_ma_flotte = {}
         self.bateau_adversaire = {}
-
         self.root.configure(bg="#263238")
         self.main_frame = tk.Frame(root, bg="#263238")
         self.main_frame.pack(fill="both", expand=True)
-        
         self.lettres = "ABCDEFGHIJ"
-
         self.creer_grille_complete("MA FLOTTE", tk.LEFT, self.boutons_ma_flotte,
                                    callback_placement, "#E1F5FE")
         self.creer_grille_complete("ATTAQUE ADVERSAIRE", tk.RIGHT,
@@ -74,18 +71,12 @@ class BatailleUI:
             callback (CALLBACK_CLIC): Action déclenchée par le clic sur un bouton.
             bg_color (str): Couleur de fond par défaut des cases.
         """
-        
         frame_ext = tk.Frame(self.main_frame, padx=20, pady=20, bg="#263238")
         frame_ext.pack(side=cote)
-
         tk.Label(frame_ext, text=titre, font=("Impact", 16), fg="white",
-                 bg="#263238").pack(pady=5)
-            
-          
+                 bg="#263238").pack(pady=5) 
         grid_frame = tk.Frame(frame_ext, bg="#37474F", padx=5, pady=5)
         grid_frame.pack()
-
-      
         for c in range(10):
             tk.Label(grid_frame, text=self.lettres[c], width=4, bg="#37474F",
                      fg="white",
@@ -95,7 +86,7 @@ class BatailleUI:
             tk.Label(grid_frame, text=str(l), height=2, bg="#37474F",
                      fg="white",
                      font=("Arial", 10, "bold")).grid(row=l, column=0, padx=5)
-                
+          
             for c in range(1, 11):
                 btn = tk.Button(
                     grid_frame,
@@ -124,7 +115,6 @@ class BatailleUI:
             (red=touché, black=raté, blue=placé).
         """
         target = self.boutons_ma_flotte if grille == "moi" else self.bateau_adversaire
-        
         if (ligne, colonne) in target:
             if couleur == "red":
                 # Tir réussi : Rouge avec un X
