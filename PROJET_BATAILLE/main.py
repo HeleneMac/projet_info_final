@@ -337,4 +337,3 @@ class Controle:
 
 if __name__ == "__main__":
     Controle().run()
-
