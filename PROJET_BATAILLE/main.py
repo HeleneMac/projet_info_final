@@ -192,6 +192,7 @@ class Controle:
         if data == "READY":
             self.pret_adv = True
             self.racine.after(0, self.verifier_demarrage)
+        
         elif data.startswith("TIR:"):
             ligne, colonne = map(int, data.split(":")[1].split(","))
             resultat = self.engine.verifier_tir(ligne, colonne)
